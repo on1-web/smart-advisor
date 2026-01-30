@@ -72,30 +72,41 @@
         const tg = window.Telegram.WebApp;
         tg.expand();
 
-        let selectedUsage = 'Bilanciato ⚖️'; // Default
+        let selectedUsage = 'Bilanciato ⚖️';
 
         function updatePrice() {
             document.getElementById('priceVal').innerText = '€' + document.getElementById('budgetInput').value;
         }
 
         function selectUsage(el, usage) {
-            // Rimuove classe selected da tutti e la mette su quello cliccato
             document.querySelectorAll('.usage-option').forEach(d => d.classList.remove('selected'));
             el.classList.add('selected');
             selectedUsage = usage;
         }
 
         function sendData() {
+            // SPIA 1: Vediamo se il click funziona
+            alert("1. Sto preparando i dati..."); 
+
             const budget = document.getElementById('budgetInput').value;
             
-            // Creiamo il pacchetto dati da mandare a Python
             const data = {
                 budget: budget,
                 usage: selectedUsage
             };
 
-            // Invia dati al bot e chiude la webview
-            tg.sendData(JSON.stringify(data)); 
+            // SPIA 2: Vediamo cosa stiamo per inviare
+            alert("2. Invio al bot: " + JSON.stringify(data));
+
+            try {
+                // Questo è il comando che invia i dati a Python
+                tg.sendData(JSON.stringify(data));
+                
+                // Chiude la finestra (se non si chiude, c'è un errore)
+                tg.close();
+            } catch (e) {
+                alert("ERRORE: " + e.message);
+            }
         }
     </script>
 </body>
