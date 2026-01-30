@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Smartphone Advisor</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        :root { --accent: #007aff; --bg: #111; --card: #222; --text: #fff; }
+        body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--text); padding: 20px; text-align: center; }
+        
+        h1 { background: linear-gradient(to right, #00c6ff, #0072ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 5px; }
+        p { color: #888; font-size: 14px; margin-bottom: 30px; }
+
+        /* SLIDER PREZZO */
+        .slider-box { background: var(--card); padding: 20px; border-radius: 16px; margin-bottom: 20px; }
+        input[type=range] { width: 100%; accent-color: var(--accent); margin-top: 15px; }
+        .price-display { font-size: 32px; font-weight: 800; color: var(--accent); display: block; }
+
+        /* SELEZIONE UTILIZZO (GRID) */
+        .usage-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 30px; }
+        .usage-option {
+            background: var(--card); border: 2px solid transparent; padding: 15px; border-radius: 12px; cursor: pointer; transition: 0.2s;
+        }
+        .usage-option.selected { border-color: var(--accent); background: rgba(0, 122, 255, 0.1); }
+        .icon { font-size: 24px; display: block; margin-bottom: 5px; }
+        .label { font-size: 12px; font-weight: bold; }
+
+        /* BOTTONE */
+        .btn-main {
+            background: linear-gradient(90deg, #00c6ff, #0072ff); color: white; border: none; padding: 16px; width: 100%;
+            border-radius: 14px; font-size: 18px; font-weight: bold; cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,114,255,0.4);
+        }
+        .btn-main:active { transform: scale(0.98); }
+    </style>
+</head>
+<body>
+
+    <h1>📱 Advisor 2026</h1>
+    <p>Trova lo smartphone perfetto in 3 secondi.</p>
+
+    <div class="slider-box">
+        <label>Il tuo Budget Massimo</label>
+        <span class="price-display" id="priceVal">€300</span>
+        <input type="range" min="150" max="1500" step="50" value="300" id="budgetInput" oninput="updatePrice()">
+    </div>
+
+    <p style="text-align:left; margin-bottom:10px; font-weight:bold;">Cosa ti interessa di più?</p>
+    <div class="usage-grid">
+        <div class="usage-option" onclick="selectUsage(this, 'Fotocamera 📸')">
+            <span class="icon">📸</span>
+            <span class="label">Foto & Video</span>
+        </div>
+        <div class="usage-option" onclick="selectUsage(this, 'Gaming 🎮')">
+            <span class="icon">🎮</span>
+            <span class="label">Gaming</span>
+        </div>
+        <div class="usage-option" onclick="selectUsage(this, 'Batteria 🔋')">
+            <span class="icon">🔋</span>
+            <span class="label">Batteria</span>
+        </div>
+        <div class="usage-option" onclick="selectUsage(this, 'Bilanciato ⚖️')">
+            <span class="icon">⚖️</span>
+            <span class="label">Tuttofare</span>
+        </div>
+    </div>
+
+    <button class="btn-main" onclick="sendData()">TROVA I MIGLIORI 🚀</button>
+
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+
+        let selectedUsage = 'Bilanciato ⚖️'; // Default
+
+        function updatePrice() {
+            document.getElementById('priceVal').innerText = '€' + document.getElementById('budgetInput').value;
+        }
+
+        function selectUsage(el, usage) {
+            // Rimuove classe selected da tutti e la mette su quello cliccato
+            document.querySelectorAll('.usage-option').forEach(d => d.classList.remove('selected'));
+            el.classList.add('selected');
+            selectedUsage = usage;
+        }
+
+        function sendData() {
+            const budget = document.getElementById('budgetInput').value;
+            
+            // Creiamo il pacchetto dati da mandare a Python
+            const data = {
+                budget: budget,
+                usage: selectedUsage
+            };
+
+            // Invia dati al bot e chiude la webview
+            tg.sendData(JSON.stringify(data)); 
+        }
+    </script>
+</body>
+</html>
